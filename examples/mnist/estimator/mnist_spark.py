@@ -88,10 +88,12 @@ def main_fun(args, ctx):
 
   def serving_input_receiver_fn():
     features = tf.placeholder(dtype=tf.float32, shape=[None, 28, 28, 1], name='features')
-    # receiver_tensors = {'features': features}
-    # return tf.estimator.export.TensorServingInputReceiver(receiver_tensors, receiver_tensors)
-    return tf.estimator.export.TensorServingInputReceiver(
-      features=features, receiver_tensors=features)
+    receiver_tensors = {'features': features}
+    return tf.estimator.export.ServingInputReceiver(receiver_tensors, receiver_tensors)
+    # return tf.estimator.export.TensorServingInputReceiver(
+    #   features=features, receiver_tensors=features)
+
+  # tf.estimator.export.ServingInputReceiver(receiver_tensors, receiver_tensors)
 
   def model_fn(features, labels, mode):
     model = tf.keras.Sequential([
@@ -144,10 +146,10 @@ def main_fun(args, ctx):
       # eval_spec=tf.estimator.EvalSpec(input_fn=input_fn, exporters=exporter)
   )
 
-  if ctx.job_name == 'chief':
-    print("Exporting saved_model to {}".format(args.export_dir))
+  # if ctx.job_name == 'chief':
+  tf.logging.info("Exporting saved_model to {}".format(args.export_dir))
     # classifier.export_saved_model(args.export_dir, serving_input_receiver_fn)
-    classifier.export_savedmodel(args.export_dir, serving_input_receiver_fn)
+  classifier.export_savedmodel(args.export_dir, serving_input_receiver_fn)
 
 
 if __name__ == "__main__":
