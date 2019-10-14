@@ -147,8 +147,8 @@ def main_fun(args, ctx):
   )
 
   # if ctx.job_name == 'chief':
-  import os
-  tf.logging.info("Exporting saved_model to {}".format(os.path.join(args.export_dir, ctx.job_name)))
+  # import os
+  # tf.logging.info("Exporting saved_model to {}".format(os.path.join(args.export_dir, ctx.job_name)))
       # classifier.export_saved_model(args.export_dir, serving_input_receiver_fn)
   classifier.export_savedmodel(args.export_dir, serving_input_receiver_fn)
 
