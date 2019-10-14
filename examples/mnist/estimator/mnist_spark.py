@@ -114,9 +114,9 @@ def main_fun(args, ctx):
       # eval_spec=tf.estimator.EvalSpec(input_fn=input_fn, exporters=exporter)
   )
 
-  if ctx.job_name == 'chief':
-    print("Exporting saved_model to {}".format(args.export_dir))
-    classifier.export_saved_model(args.export_dir, serving_input_receiver_fn)
+  # if ctx.job_name == 'chief':
+  print("Exporting saved_model to {}".format(args.export_dir))
+  classifier.export_saved_model(args.export_dir, serving_input_receiver_fn)
 
 
 if __name__ == "__main__":
