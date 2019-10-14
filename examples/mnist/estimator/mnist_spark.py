@@ -89,9 +89,9 @@ def main_fun(args, ctx):
   def serving_input_receiver_fn():
     features = tf.placeholder(dtype=tf.float32, shape=[None, 28, 28, 1], name='features')
     receiver_tensors = {'features': features}
-    return tf.estimator.export.ServingInputReceiver(receiver_tensors, receiver_tensors)
-    # return tf.estimator.export.TensorServingInputReceiver(
-    #   features=features, receiver_tensors=features)
+    # return tf.estimator.export.ServingInputReceiver(receiver_tensors, receiver_tensors)
+    return tf.estimator.export.TensorServingInputReceiver(
+      features=receiver_tensors, receiver_tensors=receiver_tensors)
 
   # tf.estimator.export.ServingInputReceiver(receiver_tensors, receiver_tensors)
 
