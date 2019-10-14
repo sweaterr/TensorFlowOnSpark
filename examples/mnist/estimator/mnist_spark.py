@@ -6,10 +6,10 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 def main_fun(args, ctx):
   import numpy as np
   import tensorflow as tf
-  import tensorflow_datasets as tfds
+  # import tensorflow_datasets as tfds
   from tensorflowonspark import TFNode
 
-  tfds.disable_progress_bar()
+  # tfds.disable_progress_bar()
 
   class StopFeedHook(tf.estimator.SessionRunHook):
     """SessionRunHook to terminate InputMode.SPARK RDD feeding if the training loop exits before the entire RDD is consumed."""
@@ -80,7 +80,7 @@ def main_fun(args, ctx):
     optimizer = tf.compat.v1.train.GradientDescentOptimizer(
         learning_rate=LEARNING_RATE)
     loss = tf.keras.losses.SparseCategoricalCrossentropy(
-        from_logits=True, reduction=tf.keras.losses.Reduction.NONE)(labels, logits)
+        from_logits=True, reduction=tf.losses.Reduction.NONE)(labels, logits)
     loss = tf.reduce_sum(input_tensor=loss) * (1. / BATCH_SIZE)
     if mode == tf.estimator.ModeKeys.EVAL:
       return tf.estimator.EstimatorSpec(mode, loss=loss)
