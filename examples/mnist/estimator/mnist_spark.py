@@ -153,4 +153,4 @@ if __name__ == "__main__":
 
   cluster = TFCluster.run(sc, main_fun, args, args.cluster_size, num_ps=0, tensorboard=args.tensorboard, input_mode=TFCluster.InputMode.SPARK, log_dir=args.model_dir, master_node='chief')
   cluster.train(images_labels, args.epochs)
-  cluster.shutdown(grace_secs=600)  # allow time for the chief to export model after data feeding
+  cluster.shutdown(grace_secs=120)  # allow time for the chief to export model after data feeding
