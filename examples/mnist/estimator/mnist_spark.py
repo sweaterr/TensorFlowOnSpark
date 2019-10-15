@@ -58,42 +58,10 @@ def main_fun(args, ctx):
         ds = ds.shard(input_context.num_input_pipelines, input_context.input_pipeline_id)
       return ds.map(scale).batch(BATCH_SIZE)
 
-  # def build_tensor_serving_input_receiver_fn(shape, dtype=tf.float32,
-  #                                            batch_size=1):
-  #   """Returns a input_receiver_fn that can be used during serving.
-  #
-  #   This expects examples to come through as float tensors, and simply
-  #   wraps them as TensorServingInputReceivers.
-  #
-  #   Arguably, this should live in tf.estimator.export. Testing here first.
-  #
-  #   Args:
-  #     shape: list representing target size of a single example.
-  #     dtype: the expected datatype for the input example
-  #     batch_size: number of input tensors that will be passed for prediction
-  #
-  #   Returns:
-  #     A function that itself returns a TensorServingInputReceiver.
-  #   """
-  #
-  #   def serving_input_receiver_fn():
-  #     # Prep a placeholder where the input example will be fed in
-  #     features = tf.placeholder(
-  #       dtype=dtype, shape=[batch_size] + shape, name='input_tensor')
-  #
-  #     return tf.estimator.export.TensorServingInputReceiver(
-  #       features=features, receiver_tensors=features)
-  #
-  #   return serving_input_receiver_fn
-
   def serving_input_receiver_fn():
-    features = tf.placeholder(dtype=tf.float32, shape=[None, 28, 28, 1], name='features')
-    # receiver_tensors = {'features': features}
-    # return tf.estimator.export.ServingInputReceiver(receiver_tensors, receiver_tensors)
-    return tf.estimator.export.TensorServingInputReceiver(
-      features=features, receiver_tensors=features)
-
-  # tf.estimator.export.ServingInputReceiver(receiver_tensors, receiver_tensors)
+    features = tf.compat.v1.placeholder(dtype=tf.float32, shape=[None, 28, 28, 1], name='features')
+    receiver_tensors = {'features': features}
+    return tf.estimator.export.ServingInputReceiver(receiver_tensors, receiver_tensors)
 
   def model_fn(features, labels, mode):
     model = tf.keras.Sequential([
@@ -112,7 +80,7 @@ def main_fun(args, ctx):
     optimizer = tf.compat.v1.train.GradientDescentOptimizer(
         learning_rate=LEARNING_RATE)
     loss = tf.keras.losses.SparseCategoricalCrossentropy(
-        from_logits=True, reduction=tf.losses.Reduction.NONE)(labels, logits)
+        from_logits=True, reduction=tf.keras.losses.Reduction.NONE)(labels, logits)
     loss = tf.reduce_sum(input_tensor=loss) * (1. / BATCH_SIZE)
     if mode == tf.estimator.ModeKeys.EVAL:
       return tf.estimator.EstimatorSpec(mode, loss=loss)
@@ -146,11 +114,9 @@ def main_fun(args, ctx):
       # eval_spec=tf.estimator.EvalSpec(input_fn=input_fn, exporters=exporter)
   )
 
-  # if ctx.job_name == 'chief':
-  # import os
-  # tf.logging.info("Exporting saved_model to {}".format(os.path.join(args.export_dir, ctx.job_name)))
-      # classifier.export_saved_model(args.export_dir, serving_input_receiver_fn)
-  classifier.export_savedmodel(args.export_dir, serving_input_receiver_fn)
+  if ctx.job_name == 'chief':
+    print("Exporting saved_model to {}".format(args.export_dir))
+    classifier.export_saved_model(args.export_dir, serving_input_receiver_fn)
 
 
 if __name__ == "__main__":
